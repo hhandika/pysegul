@@ -10,5 +10,8 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.21.2", features = ["extension-module"] }
+pyo3 = { version = "0.21.2", features = [
+    "extension-module",
+    "generate-import-lib",
+] }
 segul = "0.21.3"
