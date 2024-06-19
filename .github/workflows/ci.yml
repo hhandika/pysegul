@@ -3,7 +3,7 @@
 #
 #    maturin generate-ci github
 #
-name: CI
+name: ci
 
 on:
   push:
@@ -163,6 +163,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         env:
           id-token: write
+          environment: release
         with:
           command: upload
           args: --non-interactive --skip-existing wheels-*/*
