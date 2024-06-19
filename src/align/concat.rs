@@ -14,13 +14,13 @@ pub(crate) fn concat_alignments(
     input_dir: &str,
     input_fmt: &str,
     datatype: &str,
-    output_path: &str,
+    output_prefix: &str,
     output_fmt: &str,
     partition_fmt: &str,
 ) {
     let fmt = input_fmt.parse::<InputFmt>().expect("Invalid input format");
     let dir = Path::new(input_dir);
-    let output = Path::new(output_path);
+    let output = Path::new(output_prefix);
     let datatype = datatype.parse::<DataType>().expect("Invalid data type");
     let out_fmt = output_fmt
         .parse::<OutputFmt>()
