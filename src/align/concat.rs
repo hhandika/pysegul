@@ -11,8 +11,8 @@ use segul::{
 
 #[pyfunction]
 pub(crate) fn concat_alignments(
-    input_fmt: &str,
     input_dir: &str,
+    input_fmt: &str,
     datatype: &str,
     output_path: &str,
     output_fmt: &str,
