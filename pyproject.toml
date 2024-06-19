@@ -1,3 +1,40 @@
+[project]
+name = "pysegul"
+version = "0.1.0"
+description = "Python bindings for the SEGUL high-performance and memory-efficient phylogenomic tools."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+keywords = [
+    "phylogenomics",
+    "bioinformatics",
+    "phylogenetics",
+    "alignment",
+    "SEGUL",
+]
+authors = [
+    { name = "Heru Handika", email = "hhandi1@lsu.edu" },
+    { name = "Jacob A. Esselstyn", email = "esselstyn@lsu.edu" },
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+
+]
+
+[project.optional-dependencies]
+test = ["pytest < 5.0.0", "pytest-cov[all]"]
+
+[project.urls]
+homepage = "https://www.segul.app/"
+documentation = "https://www.segul.app/docs/api-usage/python-api"
+repository = "https://github.com/hhandika/pysegul"
+changelog = "https://github.com/hhandika/pysegul/blob/main/CHANGELOG.md"
+
+
 [build-system]
 requires = ["maturin>=1.0,<2.0"]
 build-backend = "maturin"
