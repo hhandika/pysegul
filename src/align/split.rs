@@ -19,7 +19,9 @@ pub(crate) fn split_alignments(
     input_partition: Option<String>,
     output_prefix: Option<String>,
 ) {
-    let input_fmt = input_fmt.parse::<InputFmt>().expect("Invalid input format");
+    let input_fmt = input_fmt
+        .parse::<InputFmt>()
+        .expect("Invalid input format. Valid options: 'fasta', 'nexus', 'phylip'");
     let input_dir = Path::new(input_dir);
     let output_dir = Path::new(output_dir);
     let datatype = datatype.parse::<DataType>().expect("Invalid data type");

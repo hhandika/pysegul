@@ -30,7 +30,9 @@ impl AlignmentSummarization {
     ) -> Self {
         Self {
             input_files: Vec::new(),
-            input_fmt: input_fmt.parse::<InputFmt>().expect("Invalid input format"),
+            input_fmt: input_fmt
+                .parse::<InputFmt>()
+                .expect("Invalid input format. Valid options: 'fasta', 'nexus', 'phylip'"),
             datatype: datatype.parse::<DataType>().expect("Invalid data type"),
             output_path: PathBuf::from(output_path),
             output_prefix: String::new(),

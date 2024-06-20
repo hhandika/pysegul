@@ -68,7 +68,9 @@ impl AlignmentFiltering {
         prefix: Option<String>,
         partition_fmt: Option<String>,
     ) -> Self {
-        let input_fmt = input_fmt.parse().expect("Invalid input format");
+        let input_fmt = input_fmt
+            .parse()
+            .expect("Invalid input format. Valid options: 'fasta', 'nexus', 'phylip'");
         let datatype = datatype.parse().expect("Invalid data type");
         let output_path = PathBuf::from(output_path);
         let output_fmt = output_fmt.parse().expect("Invalid output format");

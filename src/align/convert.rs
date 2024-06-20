@@ -31,8 +31,12 @@ impl AlignmentConversion {
     ) -> Self {
         Self {
             input_files: Vec::new(),
-            input_fmt: input_fmt.parse::<InputFmt>().expect("Invalid input format"),
-            datatype: datatype.parse::<DataType>().expect("Invalid data type"),
+            input_fmt: input_fmt
+                .parse::<InputFmt>()
+                .expect("Invalid input format. Valid options: 'fasta', 'nexus', 'phylip'"),
+            datatype: datatype
+                .parse::<DataType>()
+                .expect("Invalid data type. Valid options: 'dna', 'aa', or 'ignore'"),
             output_path: PathBuf::from(output_path),
             output_fmt: output_fmt
                 .parse::<OutputFmt>()
