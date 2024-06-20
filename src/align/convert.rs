@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use pyo3::prelude::*;
 use segul::{
@@ -9,23 +9,56 @@ use segul::{
     },
 };
 
-#[pyfunction]
-pub(crate) fn convert_alignments(
-    input_dir: &str,
-    input_fmt: &str,
-    datatype: &str,
-    output_path: &str,
-    output_fmt: &str,
+#[pyclass]
+pub struct AlignmentConversion {
+    input_files: Vec<PathBuf>,
+    input_fmt: InputFmt,
+    datatype: DataType,
+    output_path: PathBuf,
+    output_fmt: OutputFmt,
     sort_sequence: bool,
-) {
-    let input_dir = Path::new(input_dir);
-    let input_fmt = input_fmt.parse::<InputFmt>().expect("Invalid input format");
-    let datatype = datatype.parse::<DataType>().expect("Invalid data type");
-    let output_prefix = Path::new(output_path);
-    let input_files = SeqFileFinder::new(input_dir).find(&input_fmt);
-    let output_fmt = output_fmt
-        .parse::<OutputFmt>()
-        .expect("Invalid output format");
-    let mut handle = Converter::new(&input_fmt, &output_fmt, &datatype, sort_sequence);
-    handle.convert(&input_files, output_prefix);
+}
+
+#[pymethods]
+impl AlignmentConversion {
+    #[new]
+    pub(crate) fn new(
+        input_fmt: &str,
+        datatype: &str,
+        output_path: &str,
+        output_fmt: &str,
+        sort_sequence: bool,
+    ) -> Self {
+        Self {
+            input_files: Vec::new(),
+            input_fmt: input_fmt.parse::<InputFmt>().expect("Invalid input format"),
+            datatype: datatype.parse::<DataType>().expect("Invalid data type"),
+            output_path: PathBuf::from(output_path),
+            output_fmt: output_fmt
+                .parse::<OutputFmt>()
+                .expect("Invalid output format"),
+            sort_sequence,
+        }
+    }
+
+    pub(crate) fn from_files(&mut self, input_files: Vec<String>) {
+        self.input_files = input_files.iter().map(PathBuf::from).collect();
+        self.convert_alignments();
+    }
+
+    pub(crate) fn from_dir(&mut self, input_dir: &str) {
+        let input_dir = Path::new(input_dir);
+        self.input_files = SeqFileFinder::new(input_dir).find(&self.input_fmt);
+        self.convert_alignments();
+    }
+
+    fn convert_alignments(&self) {
+        let mut handle = Converter::new(
+            &self.input_fmt,
+            &self.output_fmt,
+            &self.datatype,
+            self.sort_sequence,
+        );
+        handle.convert(&self.input_files, &self.output_path);
+    }
 }

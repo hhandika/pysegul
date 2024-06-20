@@ -1,6 +1,7 @@
 use std::path::{Path, PathBuf};
 
 use pyo3::prelude::*;
+
 use segul::{
     handler::align::concat::ConcatHandler,
     helper::{
@@ -22,7 +23,7 @@ pub struct AlignmentConcatenation {
 #[pymethods]
 impl AlignmentConcatenation {
     #[new]
-    fn new(
+    pub(crate) fn new(
         input_fmt: &str,
         datatype: &str,
         output_prefix: &str,
@@ -43,18 +44,18 @@ impl AlignmentConcatenation {
         }
     }
 
-    #[setter]
-    pub(crate) fn input_from_files(&mut self, input_files: Vec<String>) {
+    pub(crate) fn from_files(&mut self, input_files: Vec<String>) {
         self.input_files = input_files.iter().map(PathBuf::from).collect();
+        self.concat_alignments();
     }
 
-    #[setter]
-    pub(crate) fn input_from_dir(&mut self, input_dir: &str) {
+    pub(crate) fn from_dir(&mut self, input_dir: &str) {
         let input_dir = Path::new(input_dir);
         self.input_files = SeqFileFinder::new(input_dir).find(&self.input_fmt);
+        self.concat_alignments();
     }
 
-    pub(crate) fn concat_alignments(&mut self) {
+    fn concat_alignments(&mut self) {
         let output = Path::new(&self.output_prefix);
         let mut handle = ConcatHandler::new(
             &self.input_fmt,

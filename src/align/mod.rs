@@ -7,14 +7,14 @@ mod summary;
 use pyo3::prelude::*;
 
 use crate::align::concat::AlignmentConcatenation;
-use crate::align::convert::convert_alignments;
+use crate::align::convert::AlignmentConversion;
 use crate::align::filter::AlignmentFiltering;
-use crate::align::summary::summarize_alignments;
+use crate::align::summary::AlignmentSummarization;
 
 pub(crate) fn register(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<AlignmentConcatenation>()?;
-    m.add_function(wrap_pyfunction!(summarize_alignments, m)?)?;
-    m.add_function(wrap_pyfunction!(convert_alignments, m)?)?;
+    m.add_class::<AlignmentConversion>()?;
+    m.add_class::<AlignmentSummarization>()?;
     m.add_class::<AlignmentFiltering>()?;
     Ok(())
 }
