@@ -10,6 +10,8 @@ use segul::{
     },
 };
 
+use super::{DATA_TYPE_ERR, INPUT_FMT_ERR, OUTPUT_FMT_ERR, PARTITION_FMT_ERR};
+
 #[pyclass]
 pub struct AlignmentConcatenation {
     input_files: Vec<PathBuf>,
@@ -32,17 +34,13 @@ impl AlignmentConcatenation {
     ) -> Self {
         Self {
             input_files: Vec::new(),
-            input_fmt: input_fmt
-                .parse::<InputFmt>()
-                .expect("Invalid input format. Valid options: 'fasta', 'nexus', 'phylip'"),
-            datatype: datatype.parse::<DataType>().expect("Invalid data type"),
+            input_fmt: input_fmt.parse::<InputFmt>().expect(INPUT_FMT_ERR),
+            datatype: datatype.parse::<DataType>().expect(DATA_TYPE_ERR),
             output_prefix: output_prefix.to_string(),
-            output_fmt: output_fmt
-                .parse::<OutputFmt>()
-                .expect("Invalid output format"),
+            output_fmt: output_fmt.parse::<OutputFmt>().expect(OUTPUT_FMT_ERR),
             partition_fmt: partition_fmt
                 .parse::<PartitionFmt>()
-                .expect("Invalid partition format"),
+                .expect(PARTITION_FMT_ERR),
         }
     }
 

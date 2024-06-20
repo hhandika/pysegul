@@ -9,6 +9,8 @@ use segul::{
     },
 };
 
+use super::{DATA_TYPE_ERR, INPUT_FMT_ERR};
+
 #[pyclass]
 pub struct AlignmentSummarization {
     input_files: Vec<PathBuf>,
@@ -30,10 +32,8 @@ impl AlignmentSummarization {
     ) -> Self {
         Self {
             input_files: Vec::new(),
-            input_fmt: input_fmt
-                .parse::<InputFmt>()
-                .expect("Invalid input format. Valid options: 'fasta', 'nexus', 'phylip'"),
-            datatype: datatype.parse::<DataType>().expect("Invalid data type"),
+            input_fmt: input_fmt.parse::<InputFmt>().expect(INPUT_FMT_ERR),
+            datatype: datatype.parse::<DataType>().expect(DATA_TYPE_ERR),
             output_path: PathBuf::from(output_path),
             output_prefix: String::new(),
             summary_interval,

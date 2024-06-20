@@ -1163,9 +1163,8 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
 name = "segul"
-version = "0.21.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7192d16b8217e155abad11b01067857d4d270c1f2d006cb2b83a2c8b36ed198a"
+version = "0.21.4"
+source = "git+https://github.com/hhandika/segul.git?branch=dev#90582bf0be792a6976d2d1f8bf86a0a9435e332d"
 dependencies = [
  "ahash",
  "alphanumeric-sort",

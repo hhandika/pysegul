@@ -10,6 +10,8 @@ use segul::{
     },
 };
 
+use super::{DATA_TYPE_ERR, INPUT_FMT_ERR, OUTPUT_FMT_ERR};
+
 macro_rules! filter_aln {
     ($self: ident, $input_files: ident, $parameter: ident) => {
         let mut handle = SeqFilter::new(
@@ -68,12 +70,10 @@ impl AlignmentFiltering {
         prefix: Option<String>,
         partition_fmt: Option<String>,
     ) -> Self {
-        let input_fmt = input_fmt
-            .parse()
-            .expect("Invalid input format. Valid options: 'fasta', 'nexus', 'phylip'");
-        let datatype = datatype.parse().expect("Invalid data type");
+        let input_fmt = input_fmt.parse().expect(INPUT_FMT_ERR);
+        let datatype = datatype.parse().expect(DATA_TYPE_ERR);
         let output_path = PathBuf::from(output_path);
-        let output_fmt = output_fmt.parse().expect("Invalid output format");
+        let output_fmt = output_fmt.parse().expect(OUTPUT_FMT_ERR);
         let prefix = prefix;
         let partition_fmt = partition_fmt;
 

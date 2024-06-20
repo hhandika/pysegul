@@ -9,6 +9,8 @@ use segul::{
     },
 };
 
+use super::{DATA_TYPE_ERR, INPUT_FMT_ERR, OUTPUT_FMT_ERR};
+
 #[pyclass]
 pub struct AlignmentConversion {
     input_files: Vec<PathBuf>,
@@ -31,16 +33,10 @@ impl AlignmentConversion {
     ) -> Self {
         Self {
             input_files: Vec::new(),
-            input_fmt: input_fmt
-                .parse::<InputFmt>()
-                .expect("Invalid input format. Valid options: 'fasta', 'nexus', 'phylip'"),
-            datatype: datatype
-                .parse::<DataType>()
-                .expect("Invalid data type. Valid options: 'dna', 'aa', or 'ignore'"),
+            input_fmt: input_fmt.parse::<InputFmt>().expect(INPUT_FMT_ERR),
+            datatype: datatype.parse::<DataType>().expect(DATA_TYPE_ERR),
             output_path: PathBuf::from(output_path),
-            output_fmt: output_fmt
-                .parse::<OutputFmt>()
-                .expect("Invalid output format"),
+            output_fmt: output_fmt.parse::<OutputFmt>().expect(OUTPUT_FMT_ERR),
             sort_sequence,
         }
     }
@@ -57,7 +53,7 @@ impl AlignmentConversion {
     }
 
     fn convert_alignments(&self) {
-        let mut handle = Converter::new(
+        let handle = Converter::new(
             &self.input_fmt,
             &self.output_fmt,
             &self.datatype,

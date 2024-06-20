@@ -14,4 +14,4 @@ pyo3 = { version = "0.21.2", features = [
     "extension-module",
     "generate-import-lib",
 ] }
-segul = "0.21.3"
+segul = { git = "https://github.com/hhandika/segul.git", branch = "dev" }
