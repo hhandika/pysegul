@@ -1,15 +1,15 @@
 # Release Notes
 
-## 1.0.0-alpha.3
+## 0.2.1
 
-- Fix ci release.
+- Fix concat files does not have extension.
 
-## 1.0.0-alpha.2
+## 0.2.0
 
-- Try to fix ci release.
+- Add all alignment features.
+- Add genomic features.
 
-## 1.0.0-alpha.1
+## 0.1.0
 
-### Features
-
+- Initial release.
 - Add alignment concatenation feature.

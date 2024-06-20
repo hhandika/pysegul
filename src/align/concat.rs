@@ -17,9 +17,10 @@ pub(crate) struct AlignmentConcatenation {
     input_files: Vec<PathBuf>,
     input_fmt: InputFmt,
     datatype: DataType,
-    output_prefix: String,
+    output_dir: PathBuf,
     output_fmt: OutputFmt,
     partition_fmt: PartitionFmt,
+    output_prefix: Option<String>,
 }
 
 #[pymethods]
@@ -28,19 +29,21 @@ impl AlignmentConcatenation {
     pub(crate) fn new(
         input_fmt: &str,
         datatype: &str,
-        output_prefix: &str,
+        output_dir: &str,
         output_fmt: &str,
         partition_fmt: &str,
+        output_prefix: Option<String>,
     ) -> Self {
         Self {
             input_files: Vec::new(),
             input_fmt: input_fmt.parse::<InputFmt>().expect(INPUT_FMT_ERR),
             datatype: datatype.parse::<DataType>().expect(DATA_TYPE_ERR),
-            output_prefix: output_prefix.to_string(),
+            output_dir: PathBuf::from(output_dir),
             output_fmt: output_fmt.parse::<OutputFmt>().expect(OUTPUT_FMT_ERR),
             partition_fmt: partition_fmt
                 .parse::<PartitionFmt>()
                 .expect(PARTITION_FMT_ERR),
+            output_prefix,
         }
     }
 
@@ -56,12 +59,16 @@ impl AlignmentConcatenation {
     }
 
     fn concat_alignments(&mut self) {
-        let output = Path::new(&self.output_prefix);
+        let prefix = match &self.output_prefix {
+            Some(prefix) => PathBuf::from(prefix),
+            None => self.output_dir.clone(),
+        };
         let mut handle = ConcatHandler::new(
             &self.input_fmt,
-            output,
+            &self.output_dir,
             &self.output_fmt,
             &self.partition_fmt,
+            &prefix,
         );
         handle.concat_alignment(&mut self.input_files, &self.datatype);
     }

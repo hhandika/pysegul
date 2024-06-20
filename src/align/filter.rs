@@ -4,7 +4,6 @@ use pyo3::prelude::*;
 use segul::{
     handler::align::filter::{Params, SeqFilter},
     helper::{
-        files,
         finder::{IDs, SeqFileFinder},
         types::{DataType, InputFmt, OutputFmt, PartitionFmt},
     },
@@ -34,9 +33,7 @@ macro_rules! filter_aln {
                 .expect("Partition format is required for concatenation")
                 .parse::<PartitionFmt>()
                 .expect("Invalid partition format");
-            let output_path =
-                files::create_output_fname(&$self.output_path, prefix, &$self.output_fmt);
-            handle.set_concat(&output_path, &$self.output_fmt, &partition_fmt);
+            handle.set_concat(&$self.output_fmt, &partition_fmt, prefix);
             handle.filter_aln();
         } else {
             handle.filter_aln();

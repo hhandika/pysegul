@@ -1,6 +1,6 @@
 [project]
 name = "pysegul"
-version = "0.2.0"
+version = "0.2.1"
 description = "Python bindings for the SEGUL high-performance and memory-efficient phylogenomic tools."
 readme = "README.md"
 requires-python = ">=3.8"
