@@ -13,7 +13,7 @@ use segul::{
 use super::{DATA_TYPE_ERR, INPUT_FMT_ERR, OUTPUT_FMT_ERR, PARTITION_FMT_ERR};
 
 #[pyclass]
-pub struct AlignmentConcatenation {
+pub(crate) struct AlignmentConcatenation {
     input_files: Vec<PathBuf>,
     input_fmt: InputFmt,
     datatype: DataType,

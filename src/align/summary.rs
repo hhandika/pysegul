@@ -12,7 +12,7 @@ use segul::{
 use super::{DATA_TYPE_ERR, INPUT_FMT_ERR};
 
 #[pyclass]
-pub struct AlignmentSummarization {
+pub(crate) struct AlignmentSummarization {
     input_files: Vec<PathBuf>,
     input_fmt: InputFmt,
     datatype: DataType,

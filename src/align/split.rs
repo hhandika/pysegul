@@ -9,7 +9,7 @@ use segul::{
 use super::{DATA_TYPE_ERR, INPUT_FMT_ERR, PARTITION_FMT_ERR};
 
 #[pyclass]
-pub struct AlignmentSplit {
+pub(crate) struct AlignmentSplit {
     input_path: PathBuf,
     input_fmt: InputFmt,
     datatype: DataType,

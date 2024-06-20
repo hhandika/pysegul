@@ -45,7 +45,7 @@ macro_rules! filter_aln {
 }
 
 #[pyclass]
-pub struct AlignmentFiltering {
+pub(crate) struct AlignmentFiltering {
     #[pyo3(set)]
     input_files: Vec<PathBuf>,
     input_fmt: InputFmt,
