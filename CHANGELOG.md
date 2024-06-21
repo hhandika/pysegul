@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.3.0
+
+- Add util module.
+
 ## 0.2.1
 
 - Fix concat files does not have extension.
