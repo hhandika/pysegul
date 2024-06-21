@@ -1015,7 +1015,7 @@ dependencies = [
 
 [[package]]
 name = "pysegul"
-version = "0.2.1"
+version = "0.3.0"
 dependencies = [
  "pyo3",
  "segul",
