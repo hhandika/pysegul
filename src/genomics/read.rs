@@ -14,7 +14,7 @@ const SUMMARY_MODE_ERR: &str =
     "Invalid summary mode. Valid options: 'default', 'minimal', 'complete'";
 
 #[pyclass]
-pub(crate) struct ReadSummary {
+pub struct ReadSummary {
     input_files: Vec<PathBuf>,
     input_fmt: SeqReadFmt,
     mode: SummaryMode,
@@ -25,7 +25,7 @@ pub(crate) struct ReadSummary {
 #[pymethods]
 impl ReadSummary {
     #[new]
-    pub(crate) fn new(
+    pub fn new(
         input_fmt: &str,
         mode: &str,
         output_path: &str,
@@ -40,12 +40,12 @@ impl ReadSummary {
         }
     }
 
-    pub(crate) fn from_files(&mut self, input_files: Vec<String>) {
+    fn from_files(&mut self, input_files: Vec<String>) {
         self.input_files = input_files.iter().map(PathBuf::from).collect();
         self.summarize_reads();
     }
 
-    pub(crate) fn from_dir(&mut self, input_dir: &str) {
+    fn from_dir(&mut self, input_dir: &str) {
         let input_dir = Path::new(input_dir);
         self.input_files = SeqReadFinder::new(input_dir).find(&self.input_fmt);
         self.summarize_reads();
