@@ -1,27 +1,24 @@
-#!/usr/bin/env python
 import pysegul
 
 from os import listdir
 
-def test_concat_alignments(tmp_path):
+def test_convert(tmp_path):
     input_dir = 'tests/data'
     input_format = 'nexus'
     datatype = 'dna'
     output_format = 'fasta'
-    partition_format = 'raxml'
-    prefix = 'concatenated'
+    sort_sequences = True
     output_path = tmp_path.joinpath('results')
     output_dir = str(output_path)
-    concat = pysegul.AlignmentConcatenation(
+    convert = pysegul.AlignmentConversion(
         input_format,  
         datatype, 
         output_dir, 
-        output_format, 
-        partition_format, 
-        prefix
+        output_format,
+        sort_sequences 
         )
-    concat.from_dir(input_dir)
+    convert.from_dir(input_dir)
     assert output_path.exists()
     # Check if the output directory contains the expected files
     results = listdir(output_path)
-    assert len(results) == 2
+    assert len(results) == 4
