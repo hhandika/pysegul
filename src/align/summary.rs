@@ -17,8 +17,8 @@ pub(crate) struct AlignmentSummary {
     input_fmt: InputFmt,
     datatype: DataType,
     output_path: PathBuf,
-    output_prefix: String,
     summary_interval: usize,
+    output_prefix: Option<String>,
 }
 
 #[pymethods]
@@ -29,14 +29,15 @@ impl AlignmentSummary {
         datatype: &str,
         output_path: &str,
         summary_interval: usize,
+        output_prefix: Option<String>,
     ) -> Self {
         Self {
             input_files: Vec::new(),
             input_fmt: input_fmt.parse::<InputFmt>().expect(SEQ_INPUT_FMT_ERR),
             datatype: datatype.parse::<DataType>().expect(SEQ_DATA_TYPE_ERR),
             output_path: PathBuf::from(output_path),
-            output_prefix: String::new(),
             summary_interval,
+            output_prefix,
         }
     }
 
@@ -58,6 +59,6 @@ impl AlignmentSummary {
             self.summary_interval,
             &self.datatype,
         );
-        handle.summarize_all(&mut self.input_files, Some(&self.output_prefix));
+        handle.summarize_all(&mut self.input_files, self.output_prefix.as_deref());
     }
 }
