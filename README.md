@@ -4,7 +4,7 @@
 [![PyPI version](https://badge.fury.io/py/pysegul.svg)](https://badge.fury.io/py/pysegul)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/pysegul)
 
-A python bindings of the [SEGUL](https://segul.app) high-performance and memory-efficient phylogenomic tools. It's fast and memory-efficient. It can handle large datasets with ease.
+A python bindings of the [SEGUL](https://segul.app) high-performance and memory-efficient phylogenomic tools. It is well-suited for large-scale phylogenomic projects involving thousands of loci, but it is just as capable of handling small Sanger sequences effectively.
 
 Usage: [Docs](https://www.segul.app/docs/api-usage/python-api)
 
@@ -14,7 +14,7 @@ Usage: [Docs](https://www.segul.app/docs/api-usage/python-api)
 pip install pysegul
 ```
 
-To concatenate alignments, you can use the following script:
+To concatenate alignments:
 
 ```python
 import pysegul
