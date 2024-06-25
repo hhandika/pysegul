@@ -12,7 +12,7 @@ use segul::{
 use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR};
 
 #[pyclass]
-pub(crate) struct AlignmentSummarization {
+pub(crate) struct AlignmentSummary {
     input_files: Vec<PathBuf>,
     input_fmt: InputFmt,
     datatype: DataType,
@@ -22,7 +22,7 @@ pub(crate) struct AlignmentSummarization {
 }
 
 #[pymethods]
-impl AlignmentSummarization {
+impl AlignmentSummary {
     #[new]
     pub(crate) fn new(
         input_fmt: &str,
