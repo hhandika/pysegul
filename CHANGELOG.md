@@ -1,5 +1,10 @@
 # Release Notes
 
+## 0.4.0
+
+- Add sequence features.
+- Fix CI issues.
+
 ## 0.3.0
 
 - Add util module.
