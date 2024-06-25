@@ -1015,7 +1015,7 @@ dependencies = [
 
 [[package]]
 name = "pysegul"
-version = "0.1.0"
+version = "0.3.0"
 dependencies = [
  "pyo3",
  "segul",
@@ -1163,9 +1163,8 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
 name = "segul"
-version = "0.21.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7192d16b8217e155abad11b01067857d4d270c1f2d006cb2b83a2c8b36ed198a"
+version = "0.21.4"
+source = "git+https://github.com/hhandika/segul.git?branch=dev#e22e3c444e1fa33d33a47c0f27322dcd862ba074"
 dependencies = [
  "ahash",
  "alphanumeric-sort",
@@ -1290,9 +1289,9 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 
 [[package]]
 name = "subtle"
-version = "2.5.0"
+version = "2.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "81cdd64d312baedb58e21336b31bc043b77e01cc99033ce76ef539f78e965ebc"
+checksum = "0d0208408ba0c3df17ed26eb06992cb1a1268d41b2c0e12e65203fbe3972cee5"
 
 [[package]]
 name = "syn"
