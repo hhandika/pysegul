@@ -9,7 +9,7 @@ partition_format = 'raxml'
 prefix = 'concatenated'
 
 def test_concat_alignments(tmp_path):
-    input_dir = 'tests/data'
+    input_dir = 'tests/align-data'
     output_path = tmp_path.joinpath('results')
     output_dir = str(output_path)
     concat = pysegul.AlignmentConcatenation(
@@ -27,7 +27,7 @@ def test_concat_alignments(tmp_path):
     assert len(results) == 2
 
 def test_concat_alignments_from_list(tmp_path):
-    files: list = ['tests/data/gene_1.nex', 'tests/data/gene_2.nex']
+    files: list = ['tests/align-data/gene_1.nex', 'tests/align-data/gene_2.nex']
     output_path = tmp_path.joinpath('results')
     output_dir = str(output_path)
     concat = pysegul.AlignmentConcatenation(

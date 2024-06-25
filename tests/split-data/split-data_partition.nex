@@ -1,0 +1,7 @@
+#nexus
+begin sets;
+charset gene_1 = 1-6;
+charset gene_2 = 7-14;
+charset gene_3 = 15-20;
+charset gene_4 = 21-26;
+end;
