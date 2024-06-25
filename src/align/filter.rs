@@ -9,7 +9,7 @@ use segul::{
     },
 };
 
-use super::{DATA_TYPE_ERR, INPUT_FMT_ERR, OUTPUT_FMT_ERR};
+use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, SEQ_OUTPUT_FMT_ERR};
 
 macro_rules! filter_aln {
     ($self: ident, $input_files: ident, $parameter: ident) => {
@@ -67,10 +67,10 @@ impl AlignmentFiltering {
         prefix: Option<String>,
         partition_fmt: Option<String>,
     ) -> Self {
-        let input_fmt = input_fmt.parse().expect(INPUT_FMT_ERR);
-        let datatype = datatype.parse().expect(DATA_TYPE_ERR);
+        let input_fmt = input_fmt.parse().expect(SEQ_INPUT_FMT_ERR);
+        let datatype = datatype.parse().expect(SEQ_DATA_TYPE_ERR);
         let output_path = PathBuf::from(output_path);
-        let output_fmt = output_fmt.parse().expect(OUTPUT_FMT_ERR);
+        let output_fmt = output_fmt.parse().expect(SEQ_OUTPUT_FMT_ERR);
         let prefix = prefix;
         let partition_fmt = partition_fmt;
 

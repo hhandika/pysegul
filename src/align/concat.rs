@@ -10,10 +10,12 @@ use segul::{
     },
 };
 
-use super::{DATA_TYPE_ERR, INPUT_FMT_ERR, OUTPUT_FMT_ERR, PARTITION_FMT_ERR};
+use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, SEQ_OUTPUT_FMT_ERR};
 
-/// Concatenate multiple sequence alignments into a single alignment.
-/// Automatically generates a partition file for the concatenated alignment. input_files: List of input sequence alignment files.
+use super::PARTITION_FMT_ERR;
+
+// Concatenate multiple sequence alignments into a single alignment.
+// Automatically generates a partition file for the concatenated alignment. input_files: List of input sequence alignment files.
 #[pyclass]
 pub(crate) struct AlignmentConcatenation {
     input_files: Vec<PathBuf>,
@@ -27,22 +29,22 @@ pub(crate) struct AlignmentConcatenation {
 
 #[pymethods]
 impl AlignmentConcatenation {
-    /// Create a new AlignmentConcatenation instance.
-    /// input_fmt: Input sequence alignment format. Options: 'fasta', 'phylip', 'nexus'.
-    /// datatype: Data type of the sequence alignment. Options: 'dna', 'aa', 'ignore'.
-    /// output_dir: Directory to save the concatenated alignment.
-    /// output_fmt: Output sequence alignment format.
-    /// partition_fmt: Partition file format.
-    /// output_prefix: Prefix for the output files.
-    /// Returns: AlignmentConcatenation instance.
-    ///
-    /// Output options:
-    /// - 'fasta': FASTA format.
-    /// - 'phylip': PHYLIP format.
-    /// - 'nexus': NEXUS format.
-    /// - 'fasta-int': Interleaved FASTA format.
-    /// - 'phylip-int': Interleaved PHYLIP format.
-    /// - 'nexus-int': Interleaved NEXUS format.
+    // Create a new AlignmentConcatenation instance.
+    // input_fmt: Input sequence alignment format. Options: 'fasta', 'phylip', 'nexus'.
+    // datatype: Data type of the sequence alignment. Options: 'dna', 'aa', 'ignore'.
+    // output_dir: Directory to save the concatenated alignment.
+    // output_fmt: Output sequence alignment format.
+    // partition_fmt: Partition file format.
+    // output_prefix: Prefix for the output files.
+    // Returns: AlignmentConcatenation instance.
+    //
+    // Output options:
+    // - 'fasta': FASTA format.
+    // - 'phylip': PHYLIP format.
+    // - 'nexus': NEXUS format.
+    // - 'fasta-int': Interleaved FASTA format.
+    // - 'phylip-int': Interleaved PHYLIP format.
+    // - 'nexus-int': Interleaved NEXUS format.
     #[new]
     pub(crate) fn new(
         input_fmt: &str,
@@ -54,10 +56,10 @@ impl AlignmentConcatenation {
     ) -> Self {
         Self {
             input_files: Vec::new(),
-            input_fmt: input_fmt.parse::<InputFmt>().expect(INPUT_FMT_ERR),
-            datatype: datatype.parse::<DataType>().expect(DATA_TYPE_ERR),
+            input_fmt: input_fmt.parse::<InputFmt>().expect(SEQ_INPUT_FMT_ERR),
+            datatype: datatype.parse::<DataType>().expect(SEQ_DATA_TYPE_ERR),
             output_dir: PathBuf::from(output_dir),
-            output_fmt: output_fmt.parse::<OutputFmt>().expect(OUTPUT_FMT_ERR),
+            output_fmt: output_fmt.parse::<OutputFmt>().expect(SEQ_OUTPUT_FMT_ERR),
             partition_fmt: partition_fmt
                 .parse::<PartitionFmt>()
                 .expect(PARTITION_FMT_ERR),

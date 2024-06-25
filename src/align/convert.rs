@@ -9,7 +9,7 @@ use segul::{
     },
 };
 
-use super::{DATA_TYPE_ERR, INPUT_FMT_ERR, OUTPUT_FMT_ERR};
+use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, SEQ_OUTPUT_FMT_ERR};
 
 #[pyclass]
 pub(crate) struct AlignmentConversion {
@@ -33,10 +33,10 @@ impl AlignmentConversion {
     ) -> Self {
         Self {
             input_files: Vec::new(),
-            input_fmt: input_fmt.parse::<InputFmt>().expect(INPUT_FMT_ERR),
-            datatype: datatype.parse::<DataType>().expect(DATA_TYPE_ERR),
+            input_fmt: input_fmt.parse::<InputFmt>().expect(SEQ_INPUT_FMT_ERR),
+            datatype: datatype.parse::<DataType>().expect(SEQ_DATA_TYPE_ERR),
             output_path: PathBuf::from(output_path),
-            output_fmt: output_fmt.parse::<OutputFmt>().expect(OUTPUT_FMT_ERR),
+            output_fmt: output_fmt.parse::<OutputFmt>().expect(SEQ_OUTPUT_FMT_ERR),
             sort_sequence,
         }
     }

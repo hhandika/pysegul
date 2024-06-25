@@ -6,7 +6,9 @@ use segul::{
     helper::types::{DataType, InputFmt, OutputFmt, PartitionFmt},
 };
 
-use super::{DATA_TYPE_ERR, INPUT_FMT_ERR, PARTITION_FMT_ERR};
+use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR};
+
+use super::PARTITION_FMT_ERR;
 
 #[pyclass]
 pub(crate) struct AlignmentSplit {
@@ -36,8 +38,8 @@ impl AlignmentSplit {
     ) -> Self {
         Self {
             input_path: PathBuf::from(input_path),
-            input_fmt: input_fmt.parse::<InputFmt>().expect(INPUT_FMT_ERR),
-            datatype: datatype.parse::<DataType>().expect(DATA_TYPE_ERR),
+            input_fmt: input_fmt.parse::<InputFmt>().expect(SEQ_INPUT_FMT_ERR),
+            datatype: datatype.parse::<DataType>().expect(SEQ_DATA_TYPE_ERR),
             output_dir: PathBuf::from(output_dir),
             output_fmt: partition_fmt.parse::<OutputFmt>().expect(PARTITION_FMT_ERR),
             partition_fmt: partition_fmt
