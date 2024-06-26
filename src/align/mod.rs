@@ -6,11 +6,11 @@ mod summary;
 
 use pyo3::prelude::*;
 
-use crate::align::concat::AlignmentConcatenation;
-use crate::align::convert::AlignmentConversion;
-use crate::align::filter::AlignmentFiltering;
-use crate::align::split::AlignmentSplitting;
-use crate::align::summary::AlignmentSummary;
+use concat::AlignmentConcatenation;
+use convert::AlignmentConversion;
+use filter::AlignmentFiltering;
+use split::AlignmentSplitting;
+use summary::AlignmentSummary;
 
 pub(crate) fn register(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<AlignmentConcatenation>()?;
