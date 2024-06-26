@@ -63,8 +63,8 @@ impl SequenceTranslation {
     // Translate from files
     fn translate(&self) {
         let handle = Translate::new(
-            &self.translation_table,
             &self.input_fmt,
+            &self.translation_table,
             &self.datatype,
             &self.output_format,
         );
