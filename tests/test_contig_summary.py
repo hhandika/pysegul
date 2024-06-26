@@ -2,16 +2,14 @@ import pysegul
 
 from os import listdir
 
-def test_read_summary(tmp_path):
-    input_dir = 'tests/raw-data'
+def test_contig_summary(tmp_path):
+    input_dir = 'tests/contig-data'
     input_format = 'auto'
-    summary_mode = 'default'
-    prefix = 'read_summary'
+    prefix = 'contig_summary'
     output_path = tmp_path.joinpath('results')
     output_dir = str(output_path)
-    summary = pysegul.ReadSummary(
+    summary = pysegul.ContigSummary(
         input_format,  
-        summary_mode,
         output_dir,
         prefix
         )
