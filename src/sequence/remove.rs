@@ -1,29 +1,33 @@
-//! Extract sequences from many sequence files.
+//! Remove sequences across multiple files or a directory.
 
 use std::path::{Path, PathBuf};
 
 use pyo3::prelude::*;
-use segul::handler::sequence::extract::{Extract, ExtractOpts};
-use segul::helper::types::{DataType, OutputFmt};
-use segul::helper::{finder::SeqFileFinder, types::InputFmt};
+use segul::{
+    handler::sequence::remove::{Remove, RemoveOpts},
+    helper::{
+        finder::SeqFileFinder,
+        types::{DataType, InputFmt, OutputFmt},
+    },
+};
 
 use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, SEQ_OUTPUT_FMT_ERR};
 
-macro_rules! extract_seq {
-    ($self: ident, $input_files: ident, $parameters: ident) => {
-        let handle = Extract::new(
+macro_rules! remove_seq {
+    ($self: ident, $input_files: ident, $params: ident) => {
+        let handle = Remove::new(
             &$self.input_fmt,
             &$self.datatype,
-            &$parameters,
             &$self.output_path,
             &$self.output_format,
+            &$params,
         );
-        handle.extract_sequences(&$self.$input_files)
+        handle.remove(&$self.$input_files)
     };
 }
 
 #[pyclass]
-pub(crate) struct SequenceExtraction {
+pub(crate) struct SequenceRemoval {
     input_files: Vec<PathBuf>,
     input_fmt: InputFmt,
     datatype: DataType,
@@ -32,7 +36,7 @@ pub(crate) struct SequenceExtraction {
 }
 
 #[pymethods]
-impl SequenceExtraction {
+impl SequenceRemoval {
     #[new]
     pub(crate) fn new(
         input_fmt: &str,
@@ -62,16 +66,13 @@ impl SequenceExtraction {
         self.input_files = SeqFileFinder::new(input_dir).find(&self.input_fmt);
     }
 
-    // Extract sequences using a regular expression
-    // Follow Rust regex syntax: https://docs.rs/regex/latest/regex/
-    pub(crate) fn extract_regex(&self, regex: String) {
-        let params = ExtractOpts::Regex(regex);
-        extract_seq!(self, input_files, params);
+    pub(crate) fn remove_regex(&self, regex: String) {
+        let parameters = RemoveOpts::Regex(regex);
+        remove_seq!(self, input_files, parameters);
     }
 
-    // Extract sequences list
-    pub(crate) fn extract_id_list(&self, list: Vec<String>) {
-        let params = ExtractOpts::Id(list);
-        extract_seq!(self, input_files, params);
+    pub(crate) fn remove_id_list(&self, id: Vec<String>) {
+        let parameters = RemoveOpts::Id(id);
+        remove_seq!(self, input_files, parameters);
     }
 }
