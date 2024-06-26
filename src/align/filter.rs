@@ -86,12 +86,12 @@ impl AlignmentFiltering {
         }
     }
 
-    #[setter]
+    #[setter(input_files)]
     pub(crate) fn set_input_files(&mut self, input_files: Vec<String>) {
         self.input_files = input_files.into_iter().map(PathBuf::from).collect();
     }
 
-    #[setter]
+    #[setter(input_dir)]
     pub(crate) fn set_input_dir(&mut self, input_dir: &str) {
         let input_dir = Path::new(input_dir);
         self.input_files = SeqFileFinder::new(input_dir).find(&self.input_fmt);

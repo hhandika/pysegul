@@ -8,7 +8,7 @@ output_format = 'fasta'
 partition_format = 'raxml'
 prefix = 'concatenated'
 
-def test_concat_alignments(tmp_path):
+def test_align_concatenation(tmp_path):
     input_dir = 'tests/align-data'
     output_path = tmp_path.joinpath('results')
     output_dir = str(output_path)

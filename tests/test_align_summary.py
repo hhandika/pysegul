@@ -2,7 +2,7 @@ import pysegul
 
 from os import listdir
 
-def test_id_extraction(tmp_path):
+def test_align_summary(tmp_path):
     input_dir = 'tests/align-data'
     input_format = 'nexus'
     datatype = 'dna'

@@ -2,7 +2,7 @@ use std::path::{Path, PathBuf};
 
 use pyo3::prelude::*;
 use segul::{
-    handler::align::split::AlignmentSplitting,
+    handler::align::split,
     helper::types::{DataType, InputFmt, OutputFmt, PartitionFmt},
 };
 
@@ -11,41 +11,42 @@ use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR};
 use super::PARTITION_FMT_ERR;
 
 #[pyclass]
-pub(crate) struct AlignmentSplit {
+pub(crate) struct AlignmentSplitting {
     input_path: PathBuf,
     input_fmt: InputFmt,
     datatype: DataType,
     output_dir: PathBuf,
     output_fmt: OutputFmt,
     partition_fmt: PartitionFmt,
-    uncheck_partition: bool,
+    check_partition: bool,
     output_prefix: Option<String>,
     input_partition: Option<PathBuf>,
 }
 
 #[pymethods]
-impl AlignmentSplit {
+impl AlignmentSplitting {
     #[new]
     pub(crate) fn new(
         input_path: &str,
         input_fmt: &str,
         datatype: &str,
         output_dir: &str,
+        output_fmt: &str,
         partition_fmt: &str,
-        uncheck_partition: bool,
-        output_prefix: Option<String>,
+        check_partition: bool,
         input_partition: Option<String>,
+        output_prefix: Option<String>,
     ) -> Self {
         Self {
             input_path: PathBuf::from(input_path),
             input_fmt: input_fmt.parse::<InputFmt>().expect(SEQ_INPUT_FMT_ERR),
             datatype: datatype.parse::<DataType>().expect(SEQ_DATA_TYPE_ERR),
             output_dir: PathBuf::from(output_dir),
-            output_fmt: partition_fmt.parse::<OutputFmt>().expect(PARTITION_FMT_ERR),
+            output_fmt: output_fmt.parse::<OutputFmt>().expect(PARTITION_FMT_ERR),
             partition_fmt: partition_fmt
                 .parse::<PartitionFmt>()
                 .expect(PARTITION_FMT_ERR),
-            uncheck_partition,
+            check_partition,
             output_prefix,
             input_partition: input_partition.map(PathBuf::from),
         }
@@ -58,7 +59,7 @@ impl AlignmentSplit {
             // in the same file as the input alignment
             None => Path::new(&self.input_path),
         };
-        let handle = AlignmentSplitting::new(
+        let handle = split::AlignmentSplitting::new(
             &self.input_path,
             &self.datatype,
             &self.input_fmt,
@@ -69,7 +70,7 @@ impl AlignmentSplit {
             &input_partition,
             &self.partition_fmt,
             &self.output_prefix,
-            self.uncheck_partition,
+            self.check_partition,
         );
     }
 }

@@ -2,7 +2,7 @@ import pysegul
 
 from os import listdir
 
-def test_filter(tmp_path):
+def test_align_filter(tmp_path):
     input_dir = 'tests/align-data'
     input_format = 'nexus'
     datatype = 'dna'
