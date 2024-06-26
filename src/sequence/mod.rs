@@ -1,6 +1,7 @@
 mod extract;
 mod id;
 mod remove;
+mod translate;
 
 use extract::SequenceExtraction;
 use id::IDExtraction;
