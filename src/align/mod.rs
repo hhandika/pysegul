@@ -1,9 +1,11 @@
 mod concat;
 mod convert;
 mod filter;
+mod partition;
 mod split;
 mod summary;
 
+use partition::PartitionConversion;
 use pyo3::prelude::*;
 
 use concat::AlignmentConcatenation;
@@ -18,6 +20,7 @@ pub(crate) fn register(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<AlignmentSummary>()?;
     m.add_class::<AlignmentFiltering>()?;
     m.add_class::<AlignmentSplitting>()?;
+    m.add_class::<PartitionConversion>()?;
     Ok(())
 }
 
