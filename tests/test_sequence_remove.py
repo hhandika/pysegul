@@ -9,22 +9,22 @@ def test_sequence_extract(tmp_path):
     output_format = 'fasta'
     output_path = tmp_path.joinpath('results')
     output_dir = str(output_path)
-    extract = pysegul.SequenceExtraction(
+    remove = pysegul.SequenceRemoval(
         input_format,  
         datatype, 
         output_dir, 
         output_format,
         )
-    extract.input_dir = input_dir
-    extract.extract_regex("(?i)^(abce)")
-    assert output_path.exists()
-    # Check if the output directory contains the expected files
-    results = os.listdir(output_path)
-    assert len(results) == 2
-    for i in results:
-        os.remove(output_path.joinpath(i))
-    extract.extract_id_list(['ABCD'])
+    remove.input_dir = input_dir
+    remove.remove_regex("(?i)^(abce)")
     assert output_path.exists()
     # Check if the output directory contains the expected files
     results = os.listdir(output_path)
     assert len(results) == 4
+    for i in results:
+        os.remove(output_path.joinpath(i))
+    remove.remove_id_list(['ABCD'])
+    assert output_path.exists()
+    # Check if the output directory contains the expected files
+    results = os.listdir(output_path)
+    assert len(results) == 3
