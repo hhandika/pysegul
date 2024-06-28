@@ -4,7 +4,7 @@
 
 - Fix CI issues.
 
-## 0.4.0
+## 0.4.0 (2024-06-27)
 
 - Add sequence features.
 
