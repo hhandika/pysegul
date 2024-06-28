@@ -1,9 +1,12 @@
 # Release Notes
 
+## 0.4.1 (2024-06-27)
+
+- Fix CI issues.
+
 ## 0.4.0
 
 - Add sequence features.
-- Fix CI issues.
 
 ## 0.3.0
 
