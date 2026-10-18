@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 use pyo3::{exceptions::PyValueError, prelude::*};
 use segul_core::{
     core::align::distance::{
-        group::SampleGrouping, AlignmentDistance as Distance, GroupDiagonal, MatrixDiagonal,
+        group::SampleGrouping, AlignmentDistance as Distance, MatrixDiagonal,
         MatrixTriangle,
     },
     helper::{
@@ -20,9 +20,8 @@ use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR};
 const MODEL_ERR: &str =
     "Invalid distance model. Valid options: 'p', 'jc69', 'k2p', 'tn93', 'poisson'";
 const TRIANGLE_ERR: &str = "Invalid matrix triangle. Valid options: 'full', 'lower', 'upper'";
-const DIAGONAL_ERR: &str = "Invalid matrix diagonal. Valid options: 'zero', 'blank', 'max'";
-const GROUP_DIAGONAL_ERR: &str =
-    "Invalid group matrix diagonal. Valid options: 'within', 'zero', 'blank', 'max'";
+const DIAGONAL_ERR: &str =
+    "Invalid matrix diagonal. Valid options: 'zero', 'blank', 'na', 'mean', 'max'";
 
 // How samples are assigned to groups for group mean distances.
 enum Grouping {
@@ -40,8 +39,7 @@ pub(crate) struct AlignmentDistance {
     output_path: PathBuf,
     model: DistanceModel,
     triangle: MatrixTriangle,
-    diagonal: MatrixDiagonal,
-    group_diagonal: GroupDiagonal,
+    diagonal: Option<MatrixDiagonal>,
     long_format: bool,
     output_prefix: Option<String>,
     grouping: Grouping,
@@ -51,8 +49,9 @@ pub(crate) struct AlignmentDistance {
 impl AlignmentDistance {
     // model: 'p', 'jc69', 'k2p', 'tn93' for DNA. 'p', 'jc69', 'poisson' for amino acids.
     // triangle: Part of the matrix to write. 'full', 'lower', 'upper'.
-    // diagonal: Matrix diagonal values. 'zero', 'blank', 'max' (row maximum).
-    // group_diagonal: Group matrix diagonal values. 'within', 'zero', 'blank', 'max'.
+    // diagonal: Matrix diagonal values. 'zero', 'blank', 'na'. With grouping, 'mean' or 'max'
+    // writes the within-group mean or highest distance on the group matrices.
+    // Defaults to zero, and the within-group mean on the group matrices.
     // long_format: Also write long-format tables with one row per pair.
     #[new]
     #[pyo3(signature = (
@@ -61,8 +60,7 @@ impl AlignmentDistance {
         output_path,
         model="p",
         triangle="full",
-        diagonal="zero",
-        group_diagonal="within",
+        diagonal=None,
         long_format=false,
         output_prefix=None
     ))]
@@ -73,8 +71,7 @@ impl AlignmentDistance {
         output_path: &str,
         model: &str,
         triangle: &str,
-        diagonal: &str,
-        group_diagonal: &str,
+        diagonal: Option<&str>,
         long_format: bool,
         output_prefix: Option<String>,
     ) -> PyResult<Self> {
@@ -94,8 +91,7 @@ impl AlignmentDistance {
             output_path: PathBuf::from(output_path),
             model,
             triangle: triangle.parse().expect(TRIANGLE_ERR),
-            diagonal: diagonal.parse().expect(DIAGONAL_ERR),
-            group_diagonal: group_diagonal.parse().expect(GROUP_DIAGONAL_ERR),
+            diagonal: diagonal.map(|d| d.parse().expect(DIAGONAL_ERR)),
             long_format,
             output_prefix,
             grouping: Grouping::None,
@@ -142,6 +138,13 @@ impl AlignmentDistance {
     }
 
     fn compute(&mut self) -> PyResult<()> {
+        let needs_grouping = self.diagonal.is_some_and(|d| d.requires_grouping());
+        if needs_grouping && matches!(self.grouping, Grouping::None) {
+            return Err(PyValueError::new_err(
+                "The 'mean' and 'max' diagonals require grouping. \
+                Call a group_by method or group_auto first.",
+            ));
+        }
         if let Grouping::Auto = self.grouping {
             self.grouping = Grouping::Ready(self.detect_grouping()?);
         }
@@ -152,12 +155,12 @@ impl AlignmentDistance {
             &self.output_path,
         )
         .with_triangle(self.triangle)
-        .with_diagonal(self.diagonal)
         .with_long_format(self.long_format);
+        if let Some(diagonal) = self.diagonal {
+            handle = handle.with_diagonal(diagonal);
+        }
         if let Grouping::Ready(grouping) = &self.grouping {
-            handle = handle
-                .with_grouping(grouping.clone())
-                .with_group_diagonal(self.group_diagonal);
+            handle = handle.with_grouping(grouping.clone());
         }
         handle.compute(&self.input_files, self.output_prefix.as_deref());
         Ok(())

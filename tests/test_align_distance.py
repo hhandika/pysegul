@@ -40,3 +40,24 @@ def test_align_distance_group(tmp_path):
 def test_align_distance_invalid_model(tmp_path):
     with pytest.raises(ValueError):
         pysegul.AlignmentDistance('nexus', 'dna', str(tmp_path), model='poisson')
+
+
+def test_align_distance_group_max_diagonal(tmp_path):
+    output_path = tmp_path.joinpath('results')
+    distance = pysegul.AlignmentDistance(
+        'nexus',
+        'dna',
+        str(output_path),
+        diagonal='max',
+        )
+    distance.group_by_delimiter('C', 1)
+    distance.from_dir('tests/align-data')
+    assert output_path.joinpath('distance_group_mean.csv').exists()
+
+
+def test_align_distance_group_diagonal_requires_grouping(tmp_path):
+    distance = pysegul.AlignmentDistance(
+        'nexus', 'dna', str(tmp_path), diagonal='mean'
+        )
+    with pytest.raises(ValueError):
+        distance.from_dir('tests/align-data')
