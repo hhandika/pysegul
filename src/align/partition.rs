@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 
 use pyo3::prelude::*;
-use segul::{
-    handler::align::partition::PartConverter,
+use segul_core::{
+    core::align::partition::PartitionConverter,
     helper::{
         partition::construct_partition_path,
         types::{DataType, PartitionFmt},
@@ -52,12 +52,12 @@ impl PartitionConversion {
     }
 
     fn convert_partitions(&self, input_path: PathBuf, output_path: PathBuf) {
-        let handle = PartConverter::new(
+        let handle = PartitionConverter::new(
             &input_path,
             &self.input_fmt,
             &output_path,
             &self.output_format,
         );
-        handle.convert(&self.datatype, self.check_partition)
+        handle.convert(&self.datatype, !self.check_partition)
     }
 }

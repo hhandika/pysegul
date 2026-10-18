@@ -1,8 +1,8 @@
 use std::path::{Path, PathBuf};
 
 use pyo3::prelude::*;
-use segul::{
-    handler::align::convert::Converter,
+use segul_core::{
+    core::align::convert::AlignmentConversion as Converter,
     helper::{
         finder::SeqFileFinder,
         types::{DataType, InputFmt, OutputFmt},

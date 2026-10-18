@@ -1,8 +1,8 @@
 use std::path::{Path, PathBuf};
 
 use pyo3::prelude::*;
-use segul::{
-    handler::align::split,
+use segul_core::{
+    core::align::split,
     helper::types::{DataType, InputFmt, OutputFmt, PartitionFmt},
 };
 
@@ -70,7 +70,7 @@ impl AlignmentSplitting {
             &input_partition,
             &self.partition_fmt,
             &self.output_prefix,
-            self.check_partition,
+            !self.check_partition,
         );
     }
 }

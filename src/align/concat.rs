@@ -2,8 +2,8 @@ use std::path::{Path, PathBuf};
 
 use pyo3::prelude::*;
 
-use segul::{
-    handler::align::concat::ConcatHandler,
+use segul_core::{
+    core::align::concat::AlignmentConcatenation as ConcatHandler,
     helper::{
         finder::SeqFileFinder,
         types::{DataType, InputFmt, OutputFmt, PartitionFmt},
@@ -90,6 +90,6 @@ impl AlignmentConcatenation {
             &self.partition_fmt,
             &prefix,
         );
-        handle.concat_alignment(&mut self.input_files, &self.datatype);
+        handle.concat(&mut self.input_files, &self.datatype);
     }
 }

@@ -3,8 +3,8 @@
 use std::path::{Path, PathBuf};
 
 use pyo3::prelude::*;
-use segul::{
-    handler::sequence::translate::Translate,
+use segul_core::{
+    core::sequence::translate::SequenceTranslation as Translate,
     helper::{
         finder::SeqFileFinder,
         types::{DataType, GeneticCodes, InputFmt, OutputFmt},
@@ -69,7 +69,7 @@ impl SequenceTranslation {
             &self.output_format,
         );
         match self.reading_frame {
-            Some(frame) => handle.translate_all(&self.input_files, frame, &self.output_path),
+            Some(frame) => handle.translate(&self.input_files, frame, &self.output_path),
             None => handle.translate_all_autoframe(&self.input_files, &self.output_path),
         }
     }

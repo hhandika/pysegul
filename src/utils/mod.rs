@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-use segul::helper::alphabet::DNA_STR_UPPERCASE;
+use segul_core::helper::alphabet::DNA_STR_UPPERCASE;
 
 pub(crate) fn register(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(alphabet, m)?)?;

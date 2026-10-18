@@ -1,8 +1,8 @@
 use std::path::{Path, PathBuf};
 
 use pyo3::prelude::*;
-use segul::{
-    handler::read::summarize::ReadSummaryHandler,
+use segul_core::{
+    core::read::summarize::GenomicReadSummary,
     helper::{
         finder::SeqReadFinder,
         types::{SeqReadFmt, SummaryMode},
@@ -52,7 +52,7 @@ impl ReadSummary {
     }
 
     fn summarize_reads(&mut self) {
-        let handle = ReadSummaryHandler::new(
+        let handle = GenomicReadSummary::new(
             &mut self.input_files,
             &self.input_fmt,
             &self.mode,

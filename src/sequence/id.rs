@@ -3,8 +3,8 @@
 use std::path::{Path, PathBuf};
 
 use pyo3::prelude::*;
-use segul::{
-    handler::sequence::id::Id,
+use segul_core::{
+    core::sequence::id::SequenceID,
     helper::{
         finder::SeqFileFinder,
         types::{DataType, InputFmt},
@@ -63,17 +63,18 @@ impl IDExtraction {
     }
 
     fn extract(&mut self) {
-        let handle = Id::new(
+        let handle = SequenceID::new(
             &self.input_files,
             &self.input_fmt,
             &self.datatype,
             &self.output_path,
             self.output_prefix.as_deref(),
         );
-        handle.generate_id();
-
+        // Mapping also writes the unique IDs.
         if self.map_id {
             handle.map_id();
+        } else {
+            handle.get_unique();
         }
     }
 }

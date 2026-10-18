@@ -3,9 +3,11 @@
 use std::path::{Path, PathBuf};
 
 use pyo3::prelude::*;
-use segul::handler::sequence::extract::{Extract, ExtractOpts};
-use segul::helper::types::{DataType, OutputFmt};
-use segul::helper::{finder::SeqFileFinder, types::InputFmt};
+use segul_core::core::sequence::extract::{
+    SeqExtractionParameters as ExtractOpts, SequenceExtraction as Extract,
+};
+use segul_core::helper::types::{DataType, OutputFmt};
+use segul_core::helper::{finder::SeqFileFinder, types::InputFmt};
 
 use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, SEQ_OUTPUT_FMT_ERR};
 
@@ -18,7 +20,7 @@ macro_rules! extract_seq {
             &$self.output_path,
             &$self.output_format,
         );
-        handle.extract_sequences(&$self.$input_files)
+        handle.extract(&$self.$input_files)
     };
 }
 

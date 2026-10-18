@@ -3,8 +3,8 @@
 use std::path::{Path, PathBuf};
 
 use pyo3::prelude::*;
-use segul::{
-    handler::sequence::remove::{Remove, RemoveOpts},
+use segul_core::{
+    core::sequence::remove::{SeqRemovalParameters as RemoveOpts, SequenceRemoval as Remove},
     helper::{
         finder::SeqFileFinder,
         types::{DataType, InputFmt, OutputFmt},

@@ -1,8 +1,8 @@
 use std::path::{Path, PathBuf};
 
 use pyo3::prelude::*;
-use segul::{
-    handler::contig::summarize::ContigSummaryHandler,
+use segul_core::{
+    core::contig::summarize::ContigSummaryHandler,
     helper::{finder::ContigFileFinder, types::ContigFmt},
 };
 

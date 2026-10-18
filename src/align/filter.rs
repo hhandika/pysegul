@@ -1,8 +1,8 @@
 use std::path::{Path, PathBuf};
 
 use pyo3::prelude::*;
-use segul::{
-    handler::align::filter::{Params, SeqFilter},
+use segul_core::{
+    core::align::filter::{AlignmentFiltering as SeqFilter, FilteringParameters},
     helper::{
         finder::{IDs, SeqFileFinder},
         types::{DataType, InputFmt, OutputFmt, PartitionFmt},
@@ -34,9 +34,9 @@ macro_rules! filter_aln {
                 .parse::<PartitionFmt>()
                 .expect("Invalid partition format");
             handle.set_concat(&$self.output_fmt, &partition_fmt, prefix);
-            handle.filter_aln();
+            handle.filter();
         } else {
-            handle.filter_aln();
+            handle.filter();
         }
     };
 }
@@ -58,6 +58,7 @@ pub(crate) struct AlignmentFiltering {
 #[pymethods]
 impl AlignmentFiltering {
     #[new]
+    #[pyo3(signature = (input_fmt, datatype, output_path, output_fmt, is_concat, prefix=None, partition_fmt=None))]
     pub(crate) fn new(
         input_fmt: &str,
         datatype: &str,
@@ -102,27 +103,50 @@ impl AlignmentFiltering {
             .id_unique()
             .len();
         let min_taxa = self.count_min_tax(percent_taxa, taxon_count);
-        let parameter = Params::MinTax(min_taxa);
+        let parameter = FilteringParameters::MinTax(min_taxa);
+        filter_aln!(self, input_files, parameter);
+    }
+
+    // Keep alignments with at least `min_taxa` taxa.
+    pub(crate) fn minimal_taxa_count(&self, min_taxa: usize) {
+        let parameter = FilteringParameters::MinTax(min_taxa);
         filter_aln!(self, input_files, parameter);
     }
 
     pub(crate) fn minimal_length(&self, min_length: usize) {
-        let parameter = Params::AlnLen(min_length);
+        let parameter = FilteringParameters::MinLen(min_length);
+        filter_aln!(self, input_files, parameter);
+    }
+
+    pub(crate) fn maximal_length(&self, max_length: usize) {
+        let parameter = FilteringParameters::MaxLen(max_length);
         filter_aln!(self, input_files, parameter);
     }
 
     pub(crate) fn minimal_parsimony_inf(&self, min_parsimony: usize) {
-        let parameter = Params::ParsInf(min_parsimony);
+        let parameter = FilteringParameters::MinParsInf(min_parsimony);
+        filter_aln!(self, input_files, parameter);
+    }
+
+    pub(crate) fn maximal_parsimony_inf(&self, max_parsimony: usize) {
+        let parameter = FilteringParameters::MaxParsInf(max_parsimony);
         filter_aln!(self, input_files, parameter);
     }
 
     pub(crate) fn percent_informative(&self, percent_informative: f64) {
-        let parameter = Params::PercInf(percent_informative);
+        let parameter = FilteringParameters::PercInf(percent_informative);
+        filter_aln!(self, input_files, parameter);
+    }
+
+    // Keep alignments whose proportion of missing data (gaps and '?')
+    // is at most `max_missing` (0.0 - 1.0).
+    pub(crate) fn missing_data(&self, max_missing: f64) {
+        let parameter = FilteringParameters::MissingData(max_missing);
         filter_aln!(self, input_files, parameter);
     }
 
     pub(crate) fn contain_taxa(&self, taxon_id: Vec<String>) {
-        let parameter = Params::TaxonAll(taxon_id);
+        let parameter = FilteringParameters::TaxonAll(taxon_id);
         filter_aln!(self, input_files, parameter);
     }
 

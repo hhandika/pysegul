@@ -22,3 +22,12 @@ def test_align_summary(tmp_path):
     # Check if the output directory contains the expected files
     results = listdir(output_path)
     assert len(results) == 3
+
+
+def test_align_summary_per_locus(tmp_path):
+    output_path = tmp_path.joinpath('results')
+    summary = pysegul.AlignmentSummary(
+        'nexus', 'dna', str(output_path), 5, per_locus=True
+        )
+    summary.from_dir('tests/align-data')
+    assert len(listdir(output_path)) == 4

@@ -1,8 +1,8 @@
 use std::path::{Path, PathBuf};
 
 use pyo3::prelude::*;
-use segul::{
-    handler::align::summarize::SeqStats,
+use segul_core::{
+    core::align::summarize::AlignmentSummary as SeqStats,
     helper::{
         finder::SeqFileFinder,
         types::{DataType, InputFmt},
@@ -19,17 +19,22 @@ pub(crate) struct AlignmentSummary {
     output_path: PathBuf,
     summary_interval: usize,
     output_prefix: Option<String>,
+    per_locus: bool,
 }
 
 #[pymethods]
 impl AlignmentSummary {
+    // per_locus: Write a summary for each alignment
+    // instead of a summary across all alignments.
     #[new]
+    #[pyo3(signature = (input_fmt, datatype, output_path, summary_interval, output_prefix=None, per_locus=false))]
     pub(crate) fn new(
         input_fmt: &str,
         datatype: &str,
         output_path: &str,
         summary_interval: usize,
         output_prefix: Option<String>,
+        per_locus: bool,
     ) -> Self {
         Self {
             input_files: Vec::new(),
@@ -38,6 +43,7 @@ impl AlignmentSummary {
             output_path: PathBuf::from(output_path),
             summary_interval,
             output_prefix,
+            per_locus,
         }
     }
 
@@ -59,6 +65,10 @@ impl AlignmentSummary {
             self.summary_interval,
             &self.datatype,
         );
-        handle.summarize_all(&mut self.input_files, self.output_prefix.as_deref());
+        if self.per_locus {
+            handle.summarize_locus(&self.input_files, self.output_prefix.as_deref());
+        } else {
+            handle.summarize_all(&self.input_files, self.output_prefix.as_deref());
+        }
     }
 }
