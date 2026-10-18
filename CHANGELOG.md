@@ -12,7 +12,7 @@
 - Add the `per_locus` option to `AlignmentSummary`.
 - Fix `check_partition` in `AlignmentSplitting` and `PartitionConversion`. It was inverted: `True` skipped partition checking.
 - `IDExtraction` with `map_id=True` no longer writes the unique ID file twice.
-- Document all features in the README.
+- Document all features on the SEGUL website (Python API section).
 
 ## 0.4.1 (2024-06-27)
 
