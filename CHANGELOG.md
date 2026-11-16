@@ -1,6 +1,6 @@
 # Release Notes
 
-## 0.5.0 (Unreleased)
+## 0.5.0 (2026-11-16)
 
 - Depend on the `segul-core` crate instead of `segul`, matching the SEGUL 0.24 library split.
 - Add `AlignmentDistance` for pairwise genetic distances, with group mean distances.
@@ -38,20 +38,20 @@
 
 - Add sequence features.
 
-## 0.3.0
+## 0.3.0 (2024-06-20)
 
 - Add util module.
 
-## 0.2.1
+## 0.2.1 (2024-06-19)
 
 - Fix concat files does not have extension.
 
-## 0.2.0
+## 0.2.0 (2024-06-19)
 
 - Add all alignment features.
 - Add genomic features.
 
-## 0.1.0
+## 0.1.0 (2024-06-19)
 
 - Initial release.
 - Add alignment concatenation feature.
