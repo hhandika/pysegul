@@ -36,6 +36,19 @@ Learn more on using PySEGUL in the [documentation](https://www.segul.app/docs/ap
 
 Features marked *(upcoming)* are not yet published on PyPI.
 
+Summary classes (`AlignmentSummary`, `AlignmentDistance`, `ReadSummary`, `ContigSummary`, `MafSummary`) take a `plot` option to write charts, like the CLI's `--plot`. Use `load_align_report()`, `load_contig_report()`, `load_distance_report()`, or `load_read_report()` to read their JSON reports as dicts.
+
+```python
+import pysegul
+
+summary = pysegul.AlignmentSummary(
+    'nexus', 'dna', 'results/summary', plot=pysegul.PlotOptions(format='svg')
+    )
+outputs = summary.from_dir('alignments')
+report = pysegul.load_align_report(outputs['report'])
+print(outputs['plots'])
+```
+
 ## Quick Start
 
 ```bash

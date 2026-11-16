@@ -8,6 +8,7 @@ pub(crate) fn register(m: &Bound<'_, PyModule>) -> PyResult<()> {
     Ok(())
 }
 
+/// Uppercase DNA characters, including IUPAC codes, gaps, and missing data.
 #[pyfunction]
 fn alphabet() -> String {
     DNA_STR_UPPERCASE.to_string()

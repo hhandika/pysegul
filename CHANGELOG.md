@@ -13,6 +13,22 @@
 - Fix `check_partition` in `AlignmentSplitting` and `PartitionConversion`. It was inverted: `True` skipped partition checking.
 - `IDExtraction` with `map_id=True` no longer writes the unique ID file twice.
 - Document all features on the SEGUL website (Python API section).
+- Build against `segul-core` 0.25 and PyO3 0.30.
+- Add `PlotOptions` and a `plot` option to `AlignmentSummary`, `AlignmentDistance`, `ReadSummary`, `ContigSummary`, and `MafSummary`. Charts are written to `<output>/plots` as PNG, SVG, or PDF.
+- Add `load_align_report()`, `load_contig_report()`, `load_distance_report()`, and `load_read_report()` to read summary reports as dicts. Read reports include the quality checks for each sample.
+- Add `phred` and `dup_sketch_size` to `ReadSummary`.
+- Add `extract_id_file()` to `SequenceExtraction`.
+- Summary and distance classes now return a dict of output paths. `MafConversion` returns block and locus counts.
+- Ship type stubs and docstrings, so editors show parameters and help.
+- Add defaults matching the SEGUL CLI: `summary_interval=5`, `sort_sequence=False`, `is_concat=False`, `check_partition=True`, `map_id=False`, `table="1"`, and `dest_fmt="auto"`.
+
+### Breaking Changes
+
+- Require Python 3.9 or later.
+- Invalid options raise `ValueError` instead of `PanicException`. Read summary and contig summary errors also raise `ValueError`.
+- `AlignmentFiltering` with `is_concat=True` requires `prefix` and `partition_fmt` when created, not when filtering.
+- Internal helpers such as `concat_alignments()`, `summarize_reads()`, and `count_min_tax()` are no longer callable from Python. Use `from_files()` or `from_dir()`.
+- `MafConversion.convert()` and `MafSummary.summarize()` are no longer callable from Python. Use `from_files()` or `from_dir()`.
 
 ## 0.4.1 (2024-06-27)
 

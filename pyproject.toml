@@ -3,7 +3,7 @@ name = "pysegul"
 version = "0.4.1"
 description = "Python bindings for the SEGUL high-performance and memory-efficient phylogenomic tools."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = { file = "LICENSE" }
 keywords = [
     "phylogenomics",
@@ -29,7 +29,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest < 5.0.0", "pytest-cov[all]"]
+test = ["pytest >= 7", "pytest-cov"]
 
 [project.urls]
 homepage = "https://www.segul.app/"

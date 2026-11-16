@@ -11,10 +11,16 @@ use segul_core::{
     },
 };
 
-use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR};
+use crate::common::{parse, to_paths, SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR};
 
-// Extract unique IDs across many sequence files.
-// Can also generate a mapping file for the extracted IDs.
+/// Extract unique IDs across many sequence files.
+/// Can also write a file mapping each ID to the files that contain it.
+///
+/// input_fmt: 'auto', 'fasta', 'nexus', or 'phylip'.
+/// datatype: 'dna', 'aa', or 'ignore'.
+/// output_path: Output directory.
+/// map_id: Also write the ID map.
+/// output_prefix: Name of the output files.
 #[pyclass]
 pub(crate) struct IDExtraction {
     input_files: Vec<PathBuf>,
@@ -27,42 +33,41 @@ pub(crate) struct IDExtraction {
 
 #[pymethods]
 impl IDExtraction {
-    // Create a new IDExtraction instance.
-    // input_fmt: Input sequence format. Options: 'fasta', 'phylip', 'nexus'.
-    // datatype: Data type of the sequence. Options: 'dna', 'aa'.
-    // output_path: Directory to save the extracted IDs.
-    // map_id: Generate a mapping file for the extracted IDs if true.
-    // output_prefix: Prefix for the output files.
     #[new]
-    pub(crate) fn new(
+    #[pyo3(signature = (input_fmt, datatype, output_path, map_id=false, output_prefix=None))]
+    fn new(
         input_fmt: &str,
         datatype: &str,
         output_path: &str,
         map_id: bool,
         output_prefix: Option<String>,
-    ) -> Self {
-        Self {
+    ) -> PyResult<Self> {
+        Ok(Self {
             input_files: Vec::new(),
-            input_fmt: input_fmt.parse::<InputFmt>().expect(SEQ_INPUT_FMT_ERR),
-            datatype: datatype.parse::<DataType>().expect(SEQ_DATA_TYPE_ERR),
+            input_fmt: parse(input_fmt, SEQ_INPUT_FMT_ERR)?,
+            datatype: parse(datatype, SEQ_DATA_TYPE_ERR)?,
             output_path: PathBuf::from(output_path),
             output_prefix,
             map_id,
-        }
+        })
     }
 
-    pub(crate) fn from_files(&mut self, input_files: Vec<String>) {
-        self.input_files = input_files.iter().map(PathBuf::from).collect();
+    /// Extract IDs from the given sequence files.
+    fn from_files(&mut self, input_files: Vec<String>) {
+        self.input_files = to_paths(input_files);
         self.extract();
     }
 
-    pub(crate) fn from_dir(&mut self, input_dir: &str) {
+    /// Extract IDs from the sequence files in a directory.
+    fn from_dir(&mut self, input_dir: &str) {
         let input_dir = Path::new(input_dir);
         self.input_files = SeqFileFinder::new(input_dir).find(&self.input_fmt);
         self.extract();
     }
+}
 
-    fn extract(&mut self) {
+impl IDExtraction {
+    fn extract(&self) {
         let handle = SequenceID::new(
             &self.input_files,
             &self.input_fmt,

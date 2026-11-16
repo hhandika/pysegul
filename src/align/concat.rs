@@ -10,12 +10,20 @@ use segul_core::{
     },
 };
 
-use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, SEQ_OUTPUT_FMT_ERR};
+use crate::common::{parse, to_paths, SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, SEQ_OUTPUT_FMT_ERR};
 
 use super::PARTITION_FMT_ERR;
 
-// Concatenate multiple sequence alignments into a single alignment.
-// Automatically generates a partition file for the concatenated alignment. input_files: List of input sequence alignment files.
+/// Concatenate multiple sequence alignments into a single alignment
+/// and write a partition file for it.
+///
+/// input_fmt: 'auto', 'fasta', 'nexus', or 'phylip'.
+/// datatype: 'dna', 'aa', or 'ignore'.
+/// output_dir: Directory for the concatenated alignment.
+/// output_fmt: 'fasta', 'nexus', 'phylip', or their interleaved forms
+///     ('fasta-int', 'nexus-int', 'phylip-int').
+/// partition_fmt: 'charset', 'nexus', or 'raxml'. Add '-codon' for codon partitions.
+/// output_prefix: Name of the output files.
 #[pyclass]
 pub(crate) struct AlignmentConcatenation {
     input_files: Vec<PathBuf>,
@@ -29,55 +37,41 @@ pub(crate) struct AlignmentConcatenation {
 
 #[pymethods]
 impl AlignmentConcatenation {
-    // Create a new AlignmentConcatenation instance.
-    // input_fmt: Input sequence alignment format. Options: 'fasta', 'phylip', 'nexus'.
-    // datatype: Data type of the sequence alignment. Options: 'dna', 'aa', 'ignore'.
-    // output_dir: Directory to save the concatenated alignment.
-    // output_fmt: Output sequence alignment format.
-    // partition_fmt: Partition file format.
-    // output_prefix: Prefix for the output files.
-    // Returns: AlignmentConcatenation instance.
-    //
-    // Output options:
-    // - 'fasta': FASTA format.
-    // - 'phylip': PHYLIP format.
-    // - 'nexus': NEXUS format.
-    // - 'fasta-int': Interleaved FASTA format.
-    // - 'phylip-int': Interleaved PHYLIP format.
-    // - 'nexus-int': Interleaved NEXUS format.
     #[new]
-    pub(crate) fn new(
+    #[pyo3(signature = (input_fmt, datatype, output_dir, output_fmt, partition_fmt, output_prefix=None))]
+    fn new(
         input_fmt: &str,
         datatype: &str,
         output_dir: &str,
         output_fmt: &str,
         partition_fmt: &str,
         output_prefix: Option<String>,
-    ) -> Self {
-        Self {
+    ) -> PyResult<Self> {
+        Ok(Self {
             input_files: Vec::new(),
-            input_fmt: input_fmt.parse::<InputFmt>().expect(SEQ_INPUT_FMT_ERR),
-            datatype: datatype.parse::<DataType>().expect(SEQ_DATA_TYPE_ERR),
+            input_fmt: parse(input_fmt, SEQ_INPUT_FMT_ERR)?,
+            datatype: parse(datatype, SEQ_DATA_TYPE_ERR)?,
             output_dir: PathBuf::from(output_dir),
-            output_fmt: output_fmt.parse::<OutputFmt>().expect(SEQ_OUTPUT_FMT_ERR),
-            partition_fmt: partition_fmt
-                .parse::<PartitionFmt>()
-                .expect(PARTITION_FMT_ERR),
+            output_fmt: parse(output_fmt, SEQ_OUTPUT_FMT_ERR)?,
+            partition_fmt: parse(partition_fmt, PARTITION_FMT_ERR)?,
             output_prefix,
-        }
+        })
     }
 
-    pub(crate) fn from_files(&mut self, input_files: Vec<String>) {
-        self.input_files = input_files.iter().map(PathBuf::from).collect();
+    /// Concatenate the given alignment files.
+    fn from_files(&mut self, input_files: Vec<String>) {
+        self.input_files = to_paths(input_files);
         self.concat_alignments();
     }
 
-    pub(crate) fn from_dir(&mut self, input_dir: &str) {
-        let input_dir = Path::new(input_dir);
-        self.input_files = SeqFileFinder::new(input_dir).find(&self.input_fmt);
+    /// Concatenate the alignment files in a directory.
+    fn from_dir(&mut self, input_dir: &str) {
+        self.input_files = SeqFileFinder::new(Path::new(input_dir)).find(&self.input_fmt);
         self.concat_alignments();
     }
+}
 
+impl AlignmentConcatenation {
     fn concat_alignments(&mut self) {
         let prefix = match &self.output_prefix {
             Some(prefix) => PathBuf::from(prefix),

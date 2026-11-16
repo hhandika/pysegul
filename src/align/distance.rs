@@ -2,20 +2,23 @@
 
 use std::path::{Path, PathBuf};
 
-use pyo3::{exceptions::PyValueError, prelude::*};
+use pyo3::{exceptions::PyValueError, prelude::*, types::PyDict};
 use segul_core::{
     core::align::distance::{
-        group::SampleGrouping, AlignmentDistance as Distance, MatrixDiagonal,
-        MatrixTriangle,
+        group::SampleGrouping, AlignmentDistance as Distance, MatrixDiagonal, MatrixTriangle,
     },
     helper::{
         finder::{IDs, SeqFileFinder},
         types::{DataType, InputFmt},
     },
+    plot::distance::plot_distance,
     stats::distance::DistanceModel,
 };
 
-use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR};
+use crate::common::{
+    output_dict, parse, to_paths, to_py_err, SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR,
+};
+use crate::plot::{write_plots, PlotOptions};
 
 const MODEL_ERR: &str =
     "Invalid distance model. Valid options: 'p', 'jc69', 'k2p', 'tn93', 'poisson'";
@@ -31,6 +34,22 @@ enum Grouping {
     Auto,
 }
 
+/// Compute pairwise genetic distances for each alignment.
+///
+/// input_fmt: 'auto', 'fasta', 'nexus', or 'phylip'.
+/// datatype: 'dna' or 'aa'.
+/// output_path: Output directory.
+/// model: 'p', 'jc69', 'k2p', 'tn93' for DNA. 'p', 'jc69', 'poisson' for amino acids.
+/// triangle: Part of the matrix to write. 'full', 'lower', 'upper'.
+/// diagonal: Matrix diagonal values. 'zero', 'blank', 'na'. With grouping, 'mean' or 'max'
+///     writes the within-group mean or highest distance on the group matrices.
+///     Defaults to zero, and the within-group mean on the group matrices.
+/// long_format: Also write long-format tables with one row per pair.
+/// output_prefix: Name of the output files.
+/// plot: Chart options. Writes charts when set.
+///
+/// The run methods return a dict of output paths: 'summary', 'per_locus_dir',
+/// 'group_mean', 'pairwise_long', 'report', and 'plots' (a list).
 #[pyclass]
 pub(crate) struct AlignmentDistance {
     input_files: Vec<PathBuf>,
@@ -43,16 +62,11 @@ pub(crate) struct AlignmentDistance {
     long_format: bool,
     output_prefix: Option<String>,
     grouping: Grouping,
+    plot: Option<PlotOptions>,
 }
 
 #[pymethods]
 impl AlignmentDistance {
-    // model: 'p', 'jc69', 'k2p', 'tn93' for DNA. 'p', 'jc69', 'poisson' for amino acids.
-    // triangle: Part of the matrix to write. 'full', 'lower', 'upper'.
-    // diagonal: Matrix diagonal values. 'zero', 'blank', 'na'. With grouping, 'mean' or 'max'
-    // writes the within-group mean or highest distance on the group matrices.
-    // Defaults to zero, and the within-group mean on the group matrices.
-    // long_format: Also write long-format tables with one row per pair.
     #[new]
     #[pyo3(signature = (
         input_fmt,
@@ -62,10 +76,11 @@ impl AlignmentDistance {
         triangle="full",
         diagonal=None,
         long_format=false,
-        output_prefix=None
+        output_prefix=None,
+        plot=None
     ))]
     #[allow(clippy::too_many_arguments)]
-    pub(crate) fn new(
+    fn new(
         input_fmt: &str,
         datatype: &str,
         output_path: &str,
@@ -74,9 +89,10 @@ impl AlignmentDistance {
         diagonal: Option<&str>,
         long_format: bool,
         output_prefix: Option<String>,
+        plot: Option<PlotOptions>,
     ) -> PyResult<Self> {
-        let datatype: DataType = datatype.parse().expect(SEQ_DATA_TYPE_ERR);
-        let model: DistanceModel = model.parse().expect(MODEL_ERR);
+        let datatype: DataType = parse(datatype, SEQ_DATA_TYPE_ERR)?;
+        let model: DistanceModel = parse(model, MODEL_ERR)?;
         if !model.is_valid_for(&datatype) {
             return Err(PyValueError::new_err(format!(
                 "The {} model is not valid for {} data. \
@@ -86,58 +102,66 @@ impl AlignmentDistance {
         }
         Ok(Self {
             input_files: Vec::new(),
-            input_fmt: input_fmt.parse().expect(SEQ_INPUT_FMT_ERR),
+            input_fmt: parse(input_fmt, SEQ_INPUT_FMT_ERR)?,
             datatype,
             output_path: PathBuf::from(output_path),
             model,
-            triangle: triangle.parse().expect(TRIANGLE_ERR),
-            diagonal: diagonal.map(|d| d.parse().expect(DIAGONAL_ERR)),
+            triangle: parse(triangle, TRIANGLE_ERR)?,
+            diagonal: diagonal.map(|d| parse(d, DIAGONAL_ERR)).transpose()?,
             long_format,
             output_prefix,
             grouping: Grouping::None,
+            plot,
         })
     }
 
-    // Group samples by the first `fields` fields of their IDs split on `delimiter`.
-    pub(crate) fn group_by_delimiter(&mut self, delimiter: char, fields: usize) -> PyResult<()> {
+    /// Group samples by the first `fields` fields of their IDs split on `delimiter`.
+    fn group_by_delimiter(&mut self, delimiter: char, fields: usize) -> PyResult<()> {
         let grouping = SampleGrouping::from_delimiter(delimiter, fields).map_err(to_py_err)?;
         self.grouping = Grouping::Ready(grouping);
         Ok(())
     }
 
-    // Group samples by the first capture group of a regular expression
-    // (or the whole match if there is no capture group).
-    pub(crate) fn group_by_regex(&mut self, pattern: &str) -> PyResult<()> {
+    /// Group samples by the first capture group of a regular expression
+    /// (or the whole match if there is no capture group).
+    fn group_by_regex(&mut self, pattern: &str) -> PyResult<()> {
         let grouping = SampleGrouping::from_regex(pattern).map_err(to_py_err)?;
         self.grouping = Grouping::Ready(grouping);
         Ok(())
     }
 
-    // Group samples using a two-column CSV or TSV file (sample ID, group)
-    // with a header row.
-    pub(crate) fn group_by_file(&mut self, path: &str) -> PyResult<()> {
+    /// Group samples using a two-column CSV or TSV file (sample ID, group)
+    /// with a header row.
+    fn group_by_file(&mut self, path: &str) -> PyResult<()> {
         let grouping = SampleGrouping::from_map_file(Path::new(path)).map_err(to_py_err)?;
         self.grouping = Grouping::Ready(grouping);
         Ok(())
     }
 
-    // Detect groups from the sample IDs when computing.
-    pub(crate) fn group_auto(&mut self) {
+    /// Detect groups from the sample IDs when computing.
+    fn group_auto(&mut self) {
         self.grouping = Grouping::Auto;
     }
 
-    pub(crate) fn from_files(&mut self, input_files: Vec<String>) -> PyResult<()> {
-        self.input_files = input_files.iter().map(PathBuf::from).collect();
-        self.compute()
+    /// Compute distances for the given alignment files.
+    fn from_files<'py>(
+        &mut self,
+        py: Python<'py>,
+        input_files: Vec<String>,
+    ) -> PyResult<Bound<'py, PyDict>> {
+        self.input_files = to_paths(input_files);
+        self.compute(py)
     }
 
-    pub(crate) fn from_dir(&mut self, input_dir: &str) -> PyResult<()> {
-        let input_dir = Path::new(input_dir);
-        self.input_files = SeqFileFinder::new(input_dir).find(&self.input_fmt);
-        self.compute()
+    /// Compute distances for the alignment files in a directory.
+    fn from_dir<'py>(&mut self, py: Python<'py>, input_dir: &str) -> PyResult<Bound<'py, PyDict>> {
+        self.input_files = SeqFileFinder::new(Path::new(input_dir)).find(&self.input_fmt);
+        self.compute(py)
     }
+}
 
-    fn compute(&mut self) -> PyResult<()> {
+impl AlignmentDistance {
+    fn compute<'py>(&mut self, py: Python<'py>) -> PyResult<Bound<'py, PyDict>> {
         let needs_grouping = self.diagonal.is_some_and(|d| d.requires_grouping());
         if needs_grouping && matches!(self.grouping, Grouping::None) {
             return Err(PyValueError::new_err(
@@ -162,12 +186,25 @@ impl AlignmentDistance {
         if let Grouping::Ready(grouping) = &self.grouping {
             handle = handle.with_grouping(grouping.clone());
         }
-        handle.compute(&self.input_files, self.output_prefix.as_deref());
-        Ok(())
+        let prefix = self.output_prefix.as_deref();
+        let files = handle.compute(&self.input_files, prefix);
+        let plots = write_plots(self.plot.as_ref(), &self.output_path, prefix, |writer| {
+            plot_distance(&files, writer)
+        })?;
+        let outputs = output_dict(
+            py,
+            &[
+                ("summary", Some(&files.summary)),
+                ("per_locus_dir", Some(&files.per_locus_dir)),
+                ("group_mean", files.group_mean.as_deref()),
+                ("pairwise_long", files.pairwise_long.as_deref()),
+                ("report", Some(&files.report)),
+            ],
+        )?;
+        outputs.set_item("plots", plots)?;
+        Ok(outputs)
     }
-}
 
-impl AlignmentDistance {
     fn detect_grouping(&self) -> PyResult<SampleGrouping> {
         let ids: Vec<String> = IDs::new(&self.input_files, &self.input_fmt, &self.datatype)
             .id_unique()
@@ -182,8 +219,4 @@ impl AlignmentDistance {
                 )
             })
     }
-}
-
-fn to_py_err<E: std::fmt::Display>(e: E) -> PyErr {
-    PyValueError::new_err(format!("{:#}", e))
 }

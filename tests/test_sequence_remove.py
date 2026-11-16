@@ -2,7 +2,7 @@ import pysegul
 
 import os
 
-def test_sequence_extract(tmp_path):
+def test_sequence_remove(tmp_path):
     input_dir = 'tests/align-data'
     input_format = 'nexus'
     datatype = 'dna'

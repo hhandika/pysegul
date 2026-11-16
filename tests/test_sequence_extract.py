@@ -1,4 +1,5 @@
 import pysegul
+import pytest
 
 import os
 
@@ -28,3 +29,17 @@ def test_sequence_extract(tmp_path):
     assert output_path.exists()
     results = os.listdir(output_path)
     assert len(results) == 4
+
+def test_sequence_extract_id_file(tmp_path):
+    output_path = tmp_path.joinpath('results')
+    extract = pysegul.SequenceExtraction('nexus', 'dna', str(output_path), 'fasta')
+    extract.input_dir = 'tests/align-data'
+    extract.extract_id_file('tests/id-data/ids.txt')
+    assert len(os.listdir(output_path)) == 4
+
+
+def test_sequence_extract_missing_id_file(tmp_path):
+    extract = pysegul.SequenceExtraction('nexus', 'dna', str(tmp_path), 'fasta')
+    extract.input_dir = 'tests/align-data'
+    with pytest.raises(FileNotFoundError):
+        extract.extract_id_file('tests/id-data/missing.txt')

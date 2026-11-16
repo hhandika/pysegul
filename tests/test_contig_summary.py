@@ -17,4 +17,4 @@ def test_contig_summary(tmp_path):
     assert output_path.exists()
     # Check if the output directory contains the expected files
     results = listdir(output_path)
-    assert len(results) == 1
+    assert len(results) == 2

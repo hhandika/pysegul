@@ -11,7 +11,7 @@ use segul_core::{
     },
 };
 
-use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, SEQ_OUTPUT_FMT_ERR};
+use crate::common::{parse, to_paths, SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, SEQ_OUTPUT_FMT_ERR};
 
 macro_rules! remove_seq {
     ($self: ident, $input_files: ident, $params: ident) => {
@@ -26,6 +26,13 @@ macro_rules! remove_seq {
     };
 }
 
+/// Remove sequences by ID or regular expression. Set the input with
+/// `input_files` or `input_dir`, then call a removal method.
+///
+/// input_fmt: 'auto', 'fasta', 'nexus', or 'phylip'.
+/// datatype: 'dna', 'aa', or 'ignore'.
+/// output_path: Output directory.
+/// output_format: 'fasta', 'nexus', 'phylip', or their interleaved forms.
 #[pyclass]
 pub(crate) struct SequenceRemoval {
     input_files: Vec<PathBuf>,
@@ -38,40 +45,42 @@ pub(crate) struct SequenceRemoval {
 #[pymethods]
 impl SequenceRemoval {
     #[new]
-    pub(crate) fn new(
+    fn new(
         input_fmt: &str,
         datatype: &str,
         output_path: &str,
         output_format: &str,
-    ) -> Self {
-        Self {
+    ) -> PyResult<Self> {
+        Ok(Self {
             input_files: Vec::new(),
-            input_fmt: input_fmt.parse().expect(SEQ_INPUT_FMT_ERR),
-            datatype: datatype.parse().expect(SEQ_DATA_TYPE_ERR),
+            input_fmt: parse(input_fmt, SEQ_INPUT_FMT_ERR)?,
+            datatype: parse(datatype, SEQ_DATA_TYPE_ERR)?,
             output_path: PathBuf::from(output_path),
-            output_format: output_format.parse().expect(SEQ_OUTPUT_FMT_ERR),
-        }
+            output_format: parse(output_format, SEQ_OUTPUT_FMT_ERR)?,
+        })
     }
 
-    // Input from files
+    /// Input sequence files.
     #[setter(input_files)]
-    pub(crate) fn set_input_files(&mut self, input_files: Vec<String>) {
-        self.input_files = input_files.iter().map(PathBuf::from).collect();
+    fn set_input_files(&mut self, input_files: Vec<String>) {
+        self.input_files = to_paths(input_files);
     }
 
-    // Input from a directory
+    /// Directory of input sequence files.
     #[setter(input_dir)]
-    pub(crate) fn set_input_dir(&mut self, input_dir: &str) {
+    fn set_input_dir(&mut self, input_dir: &str) {
         let input_dir = Path::new(input_dir);
         self.input_files = SeqFileFinder::new(input_dir).find(&self.input_fmt);
     }
 
-    pub(crate) fn remove_regex(&self, regex: String) {
+    /// Remove sequences whose IDs match a regular expression.
+    fn remove_regex(&self, regex: String) {
         let parameters = RemoveOpts::Regex(regex);
         remove_seq!(self, input_files, parameters);
     }
 
-    pub(crate) fn remove_id_list(&self, id: Vec<String>) {
+    /// Remove sequences with the given IDs.
+    fn remove_id_list(&self, id: Vec<String>) {
         let parameters = RemoveOpts::Id(id);
         remove_seq!(self, input_files, parameters);
     }

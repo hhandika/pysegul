@@ -21,7 +21,7 @@ def test_align_summary(tmp_path):
     assert output_path.exists()
     # Check if the output directory contains the expected files
     results = listdir(output_path)
-    assert len(results) == 3
+    assert len(results) == 4
 
 
 def test_align_summary_per_locus(tmp_path):
