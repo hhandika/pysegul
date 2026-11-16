@@ -6,7 +6,7 @@ use segul_core::{
     helper::types::{DataType, InputFmt, OutputFmt, PartitionFmt},
 };
 
-use crate::common::{parse, SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, SEQ_OUTPUT_FMT_ERR};
+use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, SEQ_OUTPUT_FMT_ERR, parse};
 
 use super::PARTITION_FMT_ERR;
 

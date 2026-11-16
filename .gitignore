@@ -132,3 +132,6 @@ dmypy.json
 # Added by cargo
 
 /target
+
+# macOS files
+.DS_Store

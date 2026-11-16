@@ -14,7 +14,7 @@ use segul_core::{
     parser::delimited,
 };
 
-use crate::common::{parse, to_paths, SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, SEQ_OUTPUT_FMT_ERR};
+use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, SEQ_OUTPUT_FMT_ERR, parse, to_paths};
 
 macro_rules! rename_seq {
     ($self: ident, $params: ident) => {

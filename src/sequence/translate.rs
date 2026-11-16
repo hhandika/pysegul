@@ -11,7 +11,7 @@ use segul_core::{
     },
 };
 
-use crate::common::{parse, to_paths, SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, SEQ_OUTPUT_FMT_ERR};
+use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, SEQ_OUTPUT_FMT_ERR, parse, to_paths};
 
 const TRANSLATION_TABLE_ERR: &str =
     "Invalid translation table. Visit: https://www.segul.app/docs/cli-usage/translate";

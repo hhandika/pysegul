@@ -13,7 +13,7 @@ use segul_core::stats::{
     },
 };
 use serde::Serialize;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 use crate::common::to_py_err;
 

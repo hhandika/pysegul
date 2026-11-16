@@ -10,7 +10,7 @@ use segul_core::helper::types::{DataType, OutputFmt};
 use segul_core::helper::{finder::SeqFileFinder, types::InputFmt};
 use segul_core::parser::txt;
 
-use crate::common::{parse, to_paths, SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, SEQ_OUTPUT_FMT_ERR};
+use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, SEQ_OUTPUT_FMT_ERR, parse, to_paths};
 
 macro_rules! extract_seq {
     ($self: ident, $input_files: ident, $parameters: ident) => {

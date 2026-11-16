@@ -9,7 +9,7 @@ use segul_core::{
     },
 };
 
-use crate::common::{parse, SEQ_DATA_TYPE_ERR};
+use crate::common::{SEQ_DATA_TYPE_ERR, parse};
 
 use super::PARTITION_FMT_ERR;
 

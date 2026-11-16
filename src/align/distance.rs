@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 use pyo3::{exceptions::PyValueError, prelude::*, types::PyDict};
 use segul_core::{
     core::align::distance::{
-        group::SampleGrouping, AlignmentDistance as Distance, MatrixDiagonal, MatrixTriangle,
+        AlignmentDistance as Distance, MatrixDiagonal, MatrixTriangle, group::SampleGrouping,
     },
     helper::{
         finder::{IDs, SeqFileFinder},
@@ -16,9 +16,9 @@ use segul_core::{
 };
 
 use crate::common::{
-    output_dict, parse, to_paths, to_py_err, SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR,
+    SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, output_dict, parse, to_paths, to_py_err,
 };
-use crate::plot::{write_plots, PlotOptions};
+use crate::plot::{PlotOptions, write_plots};
 
 const MODEL_ERR: &str =
     "Invalid distance model. Valid options: 'p', 'jc69', 'k2p', 'tn93', 'poisson'";

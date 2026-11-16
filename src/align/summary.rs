@@ -10,8 +10,8 @@ use segul_core::{
     plot::align::plot_alignment_summary,
 };
 
-use crate::common::{output_dict, parse, to_paths, SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR};
-use crate::plot::{write_plots, PlotOptions};
+use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, output_dict, parse, to_paths};
+use crate::plot::{PlotOptions, write_plots};
 
 const INTERVAL_ERR: &str = "Invalid summary interval. Valid options: 1, 2, 5, 10";
 

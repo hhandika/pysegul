@@ -12,7 +12,7 @@ use segul_core::{
 };
 
 use crate::common::{output_dict, parse, to_paths, to_py_err};
-use crate::plot::{write_plots, PlotOptions};
+use crate::plot::{PlotOptions, write_plots};
 
 const INPUT_FMT_ERR: &str = "Invalid input format. Valid options: 'auto', 'fastq', 'gzip'";
 const SUMMARY_MODE_ERR: &str =

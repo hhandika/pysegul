@@ -11,7 +11,7 @@ use segul_core::{
     },
 };
 
-use crate::common::{parse, to_paths, SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR};
+use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, parse, to_paths};
 
 /// Extract unique IDs across many sequence files.
 /// Can also write a file mapping each ID to the files that contain it.

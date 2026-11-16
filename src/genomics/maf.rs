@@ -5,16 +5,16 @@ use std::path::{Path, PathBuf};
 use pyo3::{prelude::*, types::PyDict};
 use segul_core::{
     core::maf::{
+        BlockFilter, SampleNaming,
         convert::{MafConverter, MafGrouping},
         summary::MafSummary as Summary,
-        BlockFilter, SampleNaming,
     },
     helper::{finder::MafFileFinder, types::OutputFmt},
     plot::maf::plot_maf_summary,
 };
 
-use crate::common::{output_dict, parse, to_paths, to_py_err, SEQ_OUTPUT_FMT_ERR};
-use crate::plot::{write_plots, PlotOptions};
+use crate::common::{SEQ_OUTPUT_FMT_ERR, output_dict, parse, to_paths, to_py_err};
+use crate::plot::{PlotOptions, write_plots};
 
 const GROUP_BY_ERR: &str = "Invalid grouping. Valid options: 'block', 'chrom'";
 

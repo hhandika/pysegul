@@ -11,7 +11,7 @@ use segul_core::{
     },
 };
 
-use crate::common::{parse, parse_fasta_fmt, to_paths, SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR};
+use crate::common::{SEQ_DATA_TYPE_ERR, SEQ_INPUT_FMT_ERR, parse, parse_fasta_fmt, to_paths};
 
 /// Add sequences from the input files to destination files.
 /// Sequences are matched to destination files by file name (without extension).
