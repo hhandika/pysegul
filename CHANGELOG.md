@@ -1,6 +1,6 @@
 # Release Notes
 
-## Unreleased
+## 0.5.0 (Unreleased)
 
 - Depend on the `segul-core` crate instead of `segul`, matching the SEGUL 0.24 library split.
 - Add `AlignmentDistance` for pairwise genetic distances, with group mean distances.
