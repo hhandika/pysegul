@@ -1,5 +1,14 @@
 # Release Notes
 
+## Unreleased
+
+- Add wheels for Windows ARM64.
+- Build Windows and macOS wheels for every supported Python version.
+
+### Breaking Changes
+
+- Require Python 3.10 or later.
+
 ## 0.5.0 (2026-11-16)
 
 - Depend on the `segul-core` crate instead of `segul`, matching the SEGUL 0.24 library split.
